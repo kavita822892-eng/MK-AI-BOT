@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MK AI - Your AI Assistant</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:#f5f7fb;
+  color:#111827;
+  height:100vh;
+  overflow:hidden;
+}
+
+body.dark{
+  background:#0b0f19;
+  color:#f9fafb;
+}
+
+.app{
+  display:flex;
+  height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#ffffff;
+  border-right:1px solid #e5e7eb;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.dark .sidebar{
+  background:#111827;
+  border-color:#263044;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+  margin-bottom:25px;
+}
+
+.logo span{
+  color:#6366f1;
+}
+
+.new-chat{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:12px;
+  background:#6366f1;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+
+.new-chat:hover{
+  background:#4f46e5;
+}
+
+.menu-title{
+  font-size:12px;
+  color:#9ca3af;
+  margin:10px 5px;
+}
+
+.menu button{
+  width:100%;
+  text-align:left;
+  padding:11px;
+  border:0;
+  background:transparent;
+  color:inherit;
+  border-radius:9px;
+  cursor:pointer;
+  margin-bottom:4px;
+}
+
+.menu button:hover{
+  background:#eef2ff;
+}
+
+.dark .menu button:hover{
+  background:#1f2937;
+}
+
+.sidebar-bottom{
+  margin-top:auto;
+}
+
+.theme-btn{
+  width:100%;
+  padding:11px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+.topbar{
+  height:65px;
+  border-bottom:1px solid #e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+  background:rgba(255,255,255,.8);
+  backdrop-filter:blur(10px);
+}
+
+.dark .topbar{
+  background:rgba(17,24,39,.8);
+  border-color:#263044;
+}
+
+.model{
+  font-weight:bold;
+}
+
+.status{
+  color:#22c55e;
+  font-size:13px;
+}
+
+/* CHAT */
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:35px 15%;
+}
+
+.welcome{
+  text-align:center;
+  margin-top:8vh;
+}
+
+.welcome h1{
+  font-size:42px;
+  margin-bottom:12px;
+}
+
+.gradient{
+  background:linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.welcome p{
+  color:#6b7280;
+  margin-bottom:30px;
+}
+
+.quick{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  max-width:650px;
+  margin:auto;
+}
+
+.quick button{
+  padding:15px;
+  border:1px solid #ddd;
+  background:white;
+  border-radius:13px;
+  cursor:pointer;
+  text-align:left;
+  color:#374151;
+}
+
+.dark .quick button{
+  background:#111827;
+  color:#e5e7eb;
+  border-color:#263044;
+}
+
+.quick button:hover{
+  border-color:#6366f1;
+}
+
+/* MESSAGES */
+.message{
+  display:flex;
+  gap:12px;
+  margin-bottom:24px;
+  line-height:1.6;
+}
+
+.avatar{
+  min-width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#6366f1;
+  color:white;
+  font-weight:bold;
+}
+
+.user .avatar{
+  background:#111827;
+}
+
+.dark .user .avatar{
+  background:#374151;
+}
+
+.message-content{
+  max-width:850px;
+  white-space:pre-wrap;
+}
+
+/* INPUT */
+.input-area{
+  padding:15px 15%;
+  border-top:1px solid #e5e7eb;
+}
+
+.dark .input-area{
+  border-color:#263044;
+}
+
+.input-box{
+  max-width:900px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #d1d5db;
+  background:white;
+  border-radius:16px;
+  padding:8px;
+  box-shadow:0 5px 25px rgba(0,0,0,.06);
+}
+
+.dark .input-box{
+  background:#111827;
+  border-color:#374151;
+}
+
+#prompt{
+  flex:1;
+  border:0;
+  outline:none;
+  resize:none;
+  background:transparent;
+  color:inherit;
+  padding:10px;
+  font-size:15px;
+  max-height:120px;
+}
+
+.send{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:12px;
+  background:#6366f1;
+  color:white;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.send:hover{
+  background:#4f46e5;
+}
+
+.footer{
+  text-align:center;
+  color:#9ca3af;
+  font-size:11px;
+  margin-top:7px;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .topbar{
+    padding:0 15px;
+  }
+
+  .chat{
+    padding:25px 15px;
+  }
+
+  .input-area{
+    padding:10px;
+  }
+
+  .welcome h1{
+    font-size:31px;
+  }
+
+  .quick{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <span>MK</span> AI
+    </div>
+
+    <button class="new-chat" onclick="newChat()">
+      ＋ New Chat
+    </button>
+
+    <div class="menu-title">TOOLS</div>
+
+    <div class="menu">
+      <button onclick="quickPrompt('Help me solve this maths problem')">
+        🧮 Maths
+      </button>
+
+      <button onclick="quickPrompt('Help me with my homework')">
+        📚 Homework
+      </button>
+
+      <button onclick="quickPrompt('Write a professional message for me')">
+        ✍️ Writing
+      </button>
+
+      <button onclick="quickPrompt('Explain this topic in simple Hindi')">
+        🧠 Explain
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="theme-btn" onclick="toggleTheme()">
+        🌙 Toggle Theme
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <div class="model">MK AI • Assistant</div>
+      <div class="status">● Online</div>
+    </header>
+
+    <!-- CHAT -->
+    <section class="chat" id="chat">
+
+      <div class="welcome" id="welcome">
+
+        <h1>
+          Hello, I'm <span class="gradient">MK AI</span>
+        </h1>
+
+        <p>
+          Your smart AI assistant for study, ideas and everyday questions.
+        </p>
+
+        <div class="quick">
+
+          <button onclick="quickPrompt('Explain photosynthesis in simple words')">
+            🌱 Explain a topic
+          </button>
+
+          <button onclick="quickPrompt('Solve 25 × 16 and explain it')">
+            🧮 Solve Maths
+          </button>
+
+          <button onclick="quickPrompt('Give me 5 YouTube Shorts ideas')">
+            💡 Generate ideas
+          </button>
+
+          <button onclick="quickPrompt('Write a short motivational paragraph')">
+            ✍️ Write something
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- INPUT -->
+    <div class="input-area">
+
+      <div class="input-box">
+
+        <textarea
+          id="prompt"
+          rows="1"
+          placeholder="Message MK AI..."
+          onkeydown="handleKey(event)"
+        ></textarea>
+
+        <button class="send" onclick="sendMessage()">
+          ➤
+        </button>
+
+      </div>
+
+      <div class="footer">
+        MK AI can make mistakes. Check important information.
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+
+const chat = document.getElementById("chat");
+const promptBox = document.getElementById("prompt");
+
+let messages = JSON.parse(
+  localStorage.getItem("mk_ai_messages") || "[]"
+);
+
+/* LOAD OLD CHAT */
+
+if(messages.length > 0){
+  document.getElementById("welcome").style.display="none";
+
+  messages.forEach(m=>{
+    addMessage(m.text,m.type,false);
+  });
+}
+
+/* SEND MESSAGE */
+
+function sendMessage(){
+
+  const text = promptBox.value.trim();
+
+  if(!text) return;
+
+  document.getElementById("welcome").style.display="none";
+
+  addMessage(text,"user",true);
+
+  promptBox.value="";
+
+  setTimeout(()=>{
+    const reply = generateReply(text);
+    addMessage(reply,"ai",true);
+  },700);
+}
+
+/* ADD MESSAGE */
+
+function addMessage(text,type,save){
+
+  const message = document.createElement("div");
+
+  message.className="message "+type;
+
+  const avatar = document.createElement("div");
+
+  avatar.className="avatar";
+
+  avatar.textContent =
+    type==="user" ? "U" : "M";
+
+  const content = document.createElement("div");
+
+  content.className="message-content";
+
+  content.textContent=text;
+
+  message.appendChild(avatar);
+  message.appendChild(content);
+
+  chat.appendChild(message);
+
+  chat.scrollTop=chat.scrollHeight;
+
+  if(save){
+
+    messages.push({
+      text:text,
+      type:type
+    });
+
+    localStorage.setItem(
+      "mk_ai_messages",
+      JSON.stringify(messages)
+    );
+  }
+}
+
+/* SIMPLE AI DEMO */
+
+function generateReply(text){
+
+  const t=text.toLowerCase();
+
+  if(
+    t.includes("hello") ||
+    t.includes("hi") ||
+    t.includes("namaste")
+  ){
+    return "Namaste! 👋 Main MRITUNJAYAI hoon. Aap mujhse Maths, study, writing, ideas ya kisi bhi general topic ke baare mein pooch sakte hain.";
+  }
+
+  if(
+    t.includes("math") ||
+    t.includes("गणित") ||
+    t.includes("solve")
+  ){
+    return "Bilkul! 🧮 Apna Maths question bhejiye. Main use step-by-step simple language mein samjhaunga.";
+  }
+
+  if(
+    t.includes("homework") ||
+    t.includes("पढ़ाई")
+  ){
+    return "📚 Apna question bhejo. Main concept samjha kar answer tak pahunchne mein help karunga.";
+  }
+
+  if(
+    t.includes("youtube") ||
+    t.includes("video")
+  ){
+    return "🎬 YouTube Shorts ke liye aap topic batao. Main hook, short script, scenes aur title ideas bana sakta hoon.";
+  }
+
+  if(
+    t.includes("write") ||
+    t.includes("message") ||
+    t.includes("shayari")
+  ){
+    return "✍️ Bilkul. Batao kis type ka text chahiye—short, professional, funny, emotional ya simple Hindi.";
+  }
+
+  if(
+    t.includes("who are you") ||
+    t.includes("tum kaun")
+  ){
+    return "Main MRITUNJAY  AI hoon 🤖 — ek AI assistant interface. Is demo version mein basic responses hain. Real AI model connect karne par main much more powerful ho sakta hoon.";
+  }
+
+  return "🤖 Interesting question! Main iska answer dene ke liye ready hoon. Real AI model connect karne ke baad MK AI aapke questions ka intelligent answer generate karega.";
+}
+
+/* QUICK PROMPT */
+
+function quickPrompt(text){
+
+  promptBox.value=text;
+
+  promptBox.focus();
+
+}
+
+/* ENTER */
+
+function handleKey(e){
+
+  if(e.key==="Enter" && !e.shiftKey){
+
+    e.preventDefault();
+
+    sendMessage();
+
+  }
+
+}
+
+/* NEW CHAT */
+
+function newChat(){
+
+  messages=[];
+
+  localStorage.removeItem("mk_ai_messages");
+
+  chat.innerHTML=`
+    <div class="welcome" id="welcome">
+
+      <h1>
+        Hello, I'm <span class="gradient">MK AI</span>
+      </h1>
+
+      <p>
+        Your smart AI assistant for study, ideas and everyday questions.
+      </p>
+
+      <div class="quick">
+
+        <button onclick="quickPrompt('Explain photosynthesis in simple words')">
+          🌱 Explain a topic
+        </button>
+
+        <button onclick="quickPrompt('Solve a maths problem')">
+          🧮 Solve Maths
+        </button>
+
+        <button onclick="quickPrompt('Give me YouTube Shorts ideas')">
+          💡 Generate ideas
+        </button>
+
+        <button onclick="quickPrompt('Write a motivational paragraph')">
+          ✍️ Write something
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+}
+
+/* DARK MODE */
+
+function toggleTheme(){
+
+  document.body.classList.toggle("dark");
+
+  localStorage.setItem(
+    "mk_ai_dark",
+    document.body.classList.contains("dark")
+  );
+
+}
+
+if(localStorage.getItem("mk_ai_dark")==="true"){
+  document.body.classList.add("dark");
+}
+
+</script>
+
+</body>
+</html>
